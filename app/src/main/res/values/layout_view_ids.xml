@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="base_layout_id">1</integer>
+    <integer name="scroll_view_id">2</integer>
+    <integer name="scroll_layout_id">3</integer>
+    <integer name="map_layout_id">4</integer>
+    <integer name="map_view_id">5</integer>
+    <integer name="stop_button_layout_id">6</integer>
+</resources>
