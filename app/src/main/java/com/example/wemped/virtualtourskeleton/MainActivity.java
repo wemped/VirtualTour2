@@ -1,5 +1,10 @@
 package com.example.wemped.virtualtourskeleton;
 
+import android.support.v4.app.FragmentTransaction;
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -10,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Scroller;
+import android.widget.TabHost;
+import android.widget.TabWidget;
 
 
 public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
@@ -26,8 +33,6 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
             //
         }
         generateHome();
-
-
     }
 
 
@@ -61,31 +66,31 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
         RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
         baseLayout.setLayoutParams(matchParentMatchParent);
         baseLayout.setGravity(Gravity.CENTER);
-        baseLayout.setId(R.integer.base_layout_id);
+        baseLayout.setId(R.id.base_layout_id);
 
         //Allows everything within this view to scroll, So if we have too many buttons for a screen to show, we can scroll down
         //This will be attached to baseLayout
         ScrollView scrollView = new ScrollView(this);
         scrollView.setLayoutParams(matchParentMatchParent);
-        scrollView.setId(R.integer.scroll_view_id);
+        scrollView.setId(R.id.scroll_view_id);
 
         //Linear layout within the scrollView. This will contain other layouts/views like the map and the buttons
         LinearLayout scrollLayout = new LinearLayout(this);
         scrollLayout.setLayoutParams(matchParentMatchParent);
         scrollLayout.setOrientation(LinearLayout.VERTICAL);
-        scrollLayout.setId(R.integer.scroll_layout_id);
+        scrollLayout.setId(R.id.scroll_layout_id);
 
         //Linear layout that will contain the map (and maybe the tabs/spinner?)
         LinearLayout mapLayout = new LinearLayout(this);
         mapLayout.setLayoutParams(matchParentMatchParent);
         mapLayout.setOrientation(LinearLayout.VERTICAL);
-        mapLayout.setId(R.integer.map_layout_id);
+        mapLayout.setId(R.id.map_layout_id);
 
         //This is the view within the mapLayout
         MapImageView mapView = new MapImageView(this);
         mapView.setLayoutParams(matchParentMatchParent);
         //mapView.setAdjustViewBounds(true);
-        mapView.setId(R.integer.map_view_id);
+        mapView.setId(R.id.map_view_id);
         //mapView.setOnClickListener THIS SHOULD GET HANDLED IN MapImageView Class
 
         //This most likely will get changed from a Linear layout when working with
@@ -94,7 +99,7 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
         LinearLayout stopsLayout = new LinearLayout(this);
         stopsLayout.setLayoutParams(matchParentMatchParent);
         stopsLayout.setOrientation(LinearLayout.VERTICAL);
-        stopsLayout.setId(R.integer.stop_button_layout_id);
+        stopsLayout.setId(R.id.stop_button_layout_id);
 
         /*IGNORING QR CODE STUFF FOR NOW*/
 
@@ -123,15 +128,29 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
 
     private void retrieveMaps(){
         MapRetrievalTask mr = new MapRetrievalTask(this);
+        mr.execute();
     }
 
     public void onTaskCompleted(Stop[] s){
         //This will run when retrieveStops() has completely finished its thread
+        //Populate Stops
+
     }
     public void onTaskCompleted(Map[] m){
         //This will run when retrieveMaps() has completely finished its thread
         //Create Tabs
         //Populate Stops
         //Add tabs to layout
+        createFloorTabs(this);
+    }
+
+    public void createFloorTabs(Context context){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        TabHostFragment tabHostFragment = new TabHostFragment(Globals.getMaps());
+
+        fragmentTransaction.add(R.id.map_layout_id,tabHostFragment);
+        fragmentTransaction.commitAllowingStateLoss();
     }
 }
