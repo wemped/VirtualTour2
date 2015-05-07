@@ -41,37 +41,41 @@ public class MapRetrievalTask extends AsyncTask<Void,Void,Map[]> {
         URL httpGet;
         httpGet = new URL(MAP_URL);
         try {
+            //Log.v("StopGenerator","attempting..");
             InputStream in = httpGet.openStream();
-            //Log.d("StopGenerator","Got herrre");
+            //Log.v("StopGenerator","Got herrre");
             InputStreamReader content = new InputStreamReader(in);
             BufferedReader reader = new BufferedReader(content);
             String line;
+            //Log.v("maps","here!");
             while ((line = reader.readLine()) != null) {
                 builder.append(line);
+                //Log.v("maps","readline not null...");
             }
         } catch (Exception e) {
             Log.d("StopGenerator", "" + e.getMessage());
         }
 
         String data = builder.toString();
-
+        //Log.v("maps","converted to a string");
         JSONObject jsonObject;
         try {
             jsonObject = new JSONObject(data);
             JSONArray maps = jsonObject.getJSONArray("result");
             returned = new Map[maps.length()];
-
+            //Log.v("maps","created Map array");
             for (int i = 0; i < maps.length(); i++)
             {
                 JSONObject map = maps.getJSONObject(i);
                 returned[i] = new Map(map.getInt("id"), map.getString("url"),map.getString("desc"), map.getInt("ordering"));
+                //Log.v("maps","filled in a Map");
             }
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
+        //Log.v("maps",returned[0].getMapDescription());
         return returned;
     }
 
