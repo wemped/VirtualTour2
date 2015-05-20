@@ -1,5 +1,7 @@
 package com.example.wemped.virtualtourskeleton;
 
+import android.app.ActionBar;
+import android.provider.Settings;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -7,19 +9,33 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Scroller;
 import android.widget.TabHost;
 import android.widget.TabWidget;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
+
+    private boolean stopsMapsArrived = false;
+    private FragmentManager fragmentManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +48,7 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
         }else{
             //
         }
+        stopsMapsArrived = false;
         generateHome();
     }
 
@@ -60,55 +77,46 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
 
 
     private void generateHome(){
+        RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
 
         //Basically the Screen, the very base layout for the main screen of the app
         RelativeLayout baseLayout = new RelativeLayout(this);
-        RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
         baseLayout.setLayoutParams(matchParentMatchParent);
         baseLayout.setGravity(Gravity.CENTER);
         baseLayout.setId(R.id.base_layout_id);
 
-        //Allows everything within this view to scroll, So if we have too many buttons for a screen to show, we can scroll down
-        //This will be attached to baseLayout
-        ScrollView scrollView = new ScrollView(this);
-        scrollView.setLayoutParams(matchParentMatchParent);
-        scrollView.setId(R.id.scroll_view_id);
+        //Linear layout within the baseLayout. Because we want a vertical-y structure to our app.
+        LinearLayout mainLayout = new LinearLayout(this);
+        mainLayout.setLayoutParams(matchParentMatchParent);
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setId(R.id.main_layout_id);
 
-        //Linear layout within the scrollView. This will contain other layouts/views like the map and the buttons
-        LinearLayout scrollLayout = new LinearLayout(this);
-        scrollLayout.setLayoutParams(matchParentMatchParent);
-        scrollLayout.setOrientation(LinearLayout.VERTICAL);
-        scrollLayout.setId(R.id.scroll_layout_id);
-
-        //Linear layout that will contain the map (and maybe the tabs/spinner?)
-        LinearLayout mapLayout = new LinearLayout(this);
+        //Linear layout that will contain the map and the tabs
+        //In order to show tabs, the parent of the view that holds the tabs has to be a FRAMELAYOUT
+        FrameLayout mapLayout = new FrameLayout(this);
         mapLayout.setLayoutParams(matchParentMatchParent);
-        mapLayout.setOrientation(LinearLayout.VERTICAL);
         mapLayout.setId(R.id.map_layout_id);
 
-        //This is the view within the mapLayout
+        //This is the view within the mapLayout that will hold the map image
         MapImageView mapView = new MapImageView(this);
         mapView.setLayoutParams(matchParentMatchParent);
         //mapView.setAdjustViewBounds(true);
         mapView.setId(R.id.map_view_id);
         //mapView.setOnClickListener THIS SHOULD GET HANDLED IN MapImageView Class
 
-        //This most likely will get changed from a Linear layout when working with
-        //stop button adapter
-        //This will hold all the buttons for the stops
-        LinearLayout stopsLayout = new LinearLayout(this);
-        stopsLayout.setLayoutParams(matchParentMatchParent);
-        stopsLayout.setOrientation(LinearLayout.VERTICAL);
-        stopsLayout.setId(R.id.stop_button_layout_id);
+        /*Layout for the TabHostFragment fragment to attach to. IMPORTANT: THIS MUST BE A CHILD TO A FRAMELAYOUT*/
+        LinearLayout tabLayout = new LinearLayout(this);
+        tabLayout.setLayoutParams(matchParentMatchParent);
+        tabLayout.setOrientation(LinearLayout.VERTICAL);
+        tabLayout.setId(R.id.tab_layout_id);
 
         /*IGNORING QR CODE STUFF FOR NOW*/
 
         /*Giving all views their correct parent*/
-        baseLayout.addView(scrollView);
-        scrollView.addView(scrollLayout);
-        scrollLayout.addView(mapLayout);
+        baseLayout.addView(mainLayout);
+        mainLayout.addView(mapLayout);
         mapLayout.addView(mapView);
-        scrollLayout.addView(stopsLayout);
+        mapLayout.addView(tabLayout);
 
         /*Set the activity's view*/
         setContentView(baseLayout);
@@ -133,24 +141,31 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
 
     public void onTaskCompleted(Stop[] s){
         //This will run when retrieveStops() has completely finished its thread
-        //Populate Stops
 
+        /*if we have both the maps and stops from the database, create our tabs and fill them in.*/
+        if (stopsMapsArrived){
+            createFloorTabs(this);
+        }
+        stopsMapsArrived = true;
     }
     public void onTaskCompleted(Map[] m){
         //This will run when retrieveMaps() has completely finished its thread
-        //Create Tabs
-        //Populate Stops
-        //Add tabs to layout
-        createFloorTabs(this);
+
+        /*if we have both the maps and stops from the database, create our tabs and fill them in.*/
+        if (stopsMapsArrived){
+            createFloorTabs(this);
+        }
+        stopsMapsArrived = true;
     }
 
     public void createFloorTabs(Context context){
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        Log.v("in createFloorTabs","begin");
+        fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         TabHostFragment tabHostFragment = new TabHostFragment(Globals.getMaps());
+        fragmentTransaction.add(R.id.tab_layout_id,tabHostFragment,"TAB_HOST");
 
-        fragmentTransaction.add(R.id.map_layout_id,tabHostFragment);
         fragmentTransaction.commitAllowingStateLoss();
     }
 }
