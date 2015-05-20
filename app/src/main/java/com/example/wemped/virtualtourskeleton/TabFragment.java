@@ -1,9 +1,11 @@
 package com.example.wemped.virtualtourskeleton;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,16 +48,17 @@ public class TabFragment extends ListFragment{
     public void onListItemClick(ListView l,View v, int position, long id){
         //Create intent to stopActivity
         //go to intent
+        Intent stopIntent = new Intent(getActivity(),StopActivity.class);
+
+        stopIntent.putExtra("STOP_ID",v.getId());
+
+        startActivity(stopIntent);
     }
 
     public int getMapId(){
         return this.mapId;
     }
     public String getTabName(){return this.tabName;}
-
-    public void addStops(List<Stop> stops){
-
-    }
 
     /*This adapter and its corresponding xml layouts will be where we can edit
      and design our Stop buttons and their arrangement*/
@@ -72,6 +75,8 @@ public class TabFragment extends ListFragment{
             }
             TextView name = (TextView) convertView.findViewById(R.id.textView);
             name.setText(stop.getStopName());
+
+            convertView.setId(stop.getStopID());
 
             return convertView;
         }

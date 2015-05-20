@@ -80,8 +80,6 @@ public class MapRetrievalTask extends AsyncTask<Void,Void,Map[]> {
     }
 
     protected void onPostExecute(Map[] Result){
-
-        Arrays.sort(Result);
         Globals.setMaps(Result);
         listener.onTaskCompleted(Result);
 
