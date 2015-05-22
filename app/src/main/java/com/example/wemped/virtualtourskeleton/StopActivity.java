@@ -23,7 +23,7 @@ import org.json.JSONObject;
 /**
  * Created by wemped on 5/19/15.
  */
-public class StopActivity  extends ActionBarActivity implements OnContentLoaded,View.OnClickListener, View.OnTouchListener {
+public class StopActivity  extends ActionBarActivity implements OnContentLoaded,View.OnClickListener, View.OnTouchListener, OnTaskCompleted {
     private static int STOP_ID = -1;
     private static int MAP_ID = -1;
     private static Stop stop = null;
@@ -95,12 +95,16 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
         Log.v("stop_content = ", stop.getStopContent());
         Log.v("stop_room = ", stop.getStopRooNumber());
         Log.v("stop_order = ", Integer.toString(stop.getStopOrder()));
-        JSONArray stopContent = null;
+
+        StopRetrievalTask sr = new StopRetrievalTask(this);
+        sr.execute(STOP_ID);
+
+        /*JSONArray stopContent = null;
         try {
             stopContent = new JSONArray(stop.getStopContent());
         }catch(JSONException e){
             e.printStackTrace();
-        }
+        }*/
         /*JSONArray stopContent = null;
         JSONObject object = null;
         try{
@@ -110,7 +114,7 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
             e.printStackTrace();
         }*/
 
-        for(int i = 0; i < stopContent.length(); i++)
+        /*for(int i = 0; i < stopContent.length(); i++)
         {
             try {
                 JSONObject widget = stopContent.getJSONObject(i);
@@ -135,7 +139,7 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     private void AddTextWidget(JSONObject Widget) throws JSONException{
@@ -241,5 +245,50 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
     @Override
     public boolean onTouch(View v, MotionEvent event){
         return true;
+    }
+
+    @Override
+    public void onTaskCompleted(Stop[] s) {
+        Stop thisStop = s[0];
+        this.stop = thisStop;
+
+        JSONArray stopContent = null;
+        try {
+            stopContent = new JSONArray(stop.getStopContent());
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
+
+        for(int i = 0; i < stopContent.length(); i++)
+        {
+            try {
+                JSONObject widget = stopContent.getJSONObject(i);
+                String widgetType = widget.getString("type");
+
+                if (widgetType.equals("text")) {
+
+                    AddTextWidget(widget);
+                }
+                else if (widgetType.equals("image")){
+                    AddImageWidget(widget);
+                    //this.queuedContent ++;
+                }
+                else if (widgetType.equals("video")) {
+
+                    AddVideoWidget(widget);
+                    //this.queuedContent ++;
+                }
+
+
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onTaskCompleted(Map[] m) {
+
     }
 }
