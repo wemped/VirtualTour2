@@ -49,7 +49,6 @@ public class TabFragment extends ListFragment{
         //Create intent to stopActivity
         //go to intent
         Intent stopIntent = new Intent(getActivity(),StopActivity.class);
-
         stopIntent.putExtra("STOP_ID",v.getId());
 
         startActivity(stopIntent);

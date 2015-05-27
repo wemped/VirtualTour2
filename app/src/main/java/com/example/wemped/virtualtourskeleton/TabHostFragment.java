@@ -30,7 +30,6 @@ public class TabHostFragment extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState){
-
         this.tabHost = new FragmentTabHost(getActivity());
         this.tabHost.setup(getActivity(),getChildFragmentManager(),R.id.frag_tab_host);
         int length = this.maps.length;

@@ -3,6 +3,8 @@ package com.example.wemped.virtualtourskeleton;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -23,11 +25,17 @@ import org.json.JSONObject;
 /**
  * Created by wemped on 5/19/15.
  */
-public class StopActivity  extends ActionBarActivity implements OnContentLoaded,View.OnClickListener, View.OnTouchListener {
+public class StopActivity  extends ActionBarActivity implements OnContentLoaded,View.OnClickListener, View.OnTouchListener, OnTaskCompleted {
     private static int STOP_ID = -1;
     private static int MAP_ID = -1;
+    private static int queuedContent=0;
     private static Stop stop = null;
-    private static final RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
+    private static final RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT);
+    private static final LinearLayout.LayoutParams matchParentMatchParentLin = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT);
     public static final TableLayout.LayoutParams matchParentWrapContent = new TableLayout.LayoutParams(
             TableLayout.LayoutParams.MATCH_PARENT,
             TableLayout.LayoutParams.WRAP_CONTENT);
@@ -43,21 +51,8 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stop);
-        this.stop = Globals.getStopById(getIntent().getExtras().getInt("STOP_ID"));
-
-        if (Globals.getStops() == null){
-            Log.v("retreving stops","all stops are null");
-        }
-
-        int stopid = getIntent().getExtras().getInt("STOP_ID");
-
-        Log.v("retrieving stops","stopid = " + stopid);
-
-        if (Globals.getStopById(stopid) == null){
-            Log.v("retrieving stops","cant find that stop");
-        }
-        STOP_ID = this.stop.getStopID();
-        MAP_ID = this.stop.getStopMapID();
+        STOP_ID = getIntent().getExtras().getInt("STOP_ID");
+        setTitle("");
         buildStop();
     }
 
@@ -91,51 +86,9 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
         mainLayout.setOrientation(LinearLayout.VERTICAL);
         mainLayout.setVisibility(View.INVISIBLE);
         //mainView.setOnTouchListener(this);
-        setTitle(stop.getStopName());
-        Log.v("stop_content = ", stop.getStopContent());
-        Log.v("stop_room = ", stop.getStopRooNumber());
-        Log.v("stop_order = ", Integer.toString(stop.getStopOrder()));
-        JSONArray stopContent = null;
-        try {
-            stopContent = new JSONArray(stop.getStopContent());
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-        /*JSONArray stopContent = null;
-        JSONObject object = null;
-        try{
-            object =(JSONObject) new JSONObject(stop.getStopContent());
-            stopContent = (JSONArray)object.getJSONArray("result");
-        }catch(JSONException e){
-            e.printStackTrace();
-        }*/
 
-        for(int i = 0; i < stopContent.length(); i++)
-        {
-            try {
-                JSONObject widget = stopContent.getJSONObject(i);
-                String widgetType = widget.getString("type");
-
-                if (widgetType.equals("text")) {
-
-                    AddTextWidget(widget);
-                }
-                else if (widgetType.equals("image")){
-                    AddImageWidget(widget);
-                    //this.queuedContent ++;
-                }
-                else if (widgetType.equals("video")) {
-
-                    AddVideoWidget(widget);
-                    //this.queuedContent ++;
-                }
-
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+        StopRetrievalTask sr = new StopRetrievalTask(this);
+        sr.execute(STOP_ID);
     }
 
     private void AddTextWidget(JSONObject Widget) throws JSONException{
@@ -146,9 +99,7 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
 
 
         //Title Text
-        //TextView textTitle = GenerateTitle(titleString);
-        TextView textTitle = new TextView(this);
-        textTitle.setText(stop.getStopName());
+        TextView textTitle = GenerateTitle(titleString);
 
         //Content Text
         TextView textContent = new TextView(this);
@@ -171,9 +122,7 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
         String titleString = Widget.getString("title");
 
         //Generate Content
-        //TextView textTitle = GenerateTitle(titleString);
-        TextView textTitle = new TextView(this);
-        textTitle.setText(stop.getStopName());
+        TextView textTitle = GenerateTitle(titleString);
 
         ImageView imageContent = new ImageView(this);
         imageContent.setLayoutParams(matchParentWrapContent);
@@ -204,9 +153,7 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
         videoPreview.setAdjustViewBounds(true);
 
         //Create a title for the view preview
-        //TextView textTitle = GenerateTitle(titleString);
-        TextView textTitle = new TextView(this);
-        textTitle.setText(stop.getStopName());
+        TextView textTitle = GenerateTitle(titleString);
 
         //Retrieve a thumbnail and set it to the image preview
         ThumbnailRetrievalTask trt = new ThumbnailRetrievalTask(videoPreview,this);
@@ -236,10 +183,81 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
     }
     @Override
     public void onContentLoaded() {
+        this.queuedContent --;
 
+        if (queuedContent == 0)
+        {
+            //loadingPopup.dismiss();
+            LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
+            MainLayout.setVisibility(View.VISIBLE);
+        }
     }
     @Override
+    /*Need to fill in, thinking this is the swipe handler stuff!*/
     public boolean onTouch(View v, MotionEvent event){
         return true;
+    }
+
+    @Override
+    public void onTaskCompleted(Stop[] s) {
+
+        Stop thisStop = s[0];
+        this.stop = thisStop;
+        setTitle(this.stop.getStopName());
+        JSONArray stopContent = null;
+        try {
+            stopContent = new JSONArray(thisStop.getStopContent());
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
+        for(int i = 0; i < stopContent.length(); i++)
+        {
+            try {
+                JSONObject widget = stopContent.getJSONObject(i);
+                String widgetType = widget.getString("type");
+
+                if (widgetType.equals("text")) {
+
+                    AddTextWidget(widget);
+                }
+                else if (widgetType.equals("image")){
+                    AddImageWidget(widget);
+                    this.queuedContent ++;
+                }
+                else if (widgetType.equals("video")) {
+
+                    AddVideoWidget(widget);
+                    this.queuedContent ++;
+                }
+
+
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    @Override
+    /*Unneeded for this activity, but is necessary for stub to be here*/
+    public void onTaskCompleted(Map[] m) {
+
+    }
+    private TextView GenerateTitle(String titleText) {
+
+        //Make the Title Text Underlined
+        SpannableString underlinedTitle = new SpannableString(titleText);
+        underlinedTitle.setSpan(new UnderlineSpan(), 0, titleText.length(), 0);
+
+        //Title Text
+        TextView textTitle = new TextView(this);
+        LinearLayout.LayoutParams titleparams = matchParentMatchParentLin;
+        titleparams.gravity = Gravity.CENTER;
+        textTitle.setLayoutParams(titleparams);
+        textTitle.setTextSize(20);
+        textTitle.setText(underlinedTitle);
+
+        return textTitle;
     }
 }

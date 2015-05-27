@@ -36,11 +36,20 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
 
     private boolean stopsMapsArrived = false;
     private FragmentManager fragmentManager = null;
+    private RelativeLayout baseLayout = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
+        /*all creation now will happen in onResume to make sure all values are filled
+        * in when returning from a seperate activity*/
+    }
+
+    public void onResume(){
+        super.onResume();
+        if (baseLayout != null){
+            baseLayout.removeAllViews();
+        }
 
         if (this.getIntent().getExtras() != null){
             //Check first run stuff?
@@ -51,7 +60,6 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
         stopsMapsArrived = false;
         generateHome();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
         RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
 
         //Basically the Screen, the very base layout for the main screen of the app
-        RelativeLayout baseLayout = new RelativeLayout(this);
+        this.baseLayout = new RelativeLayout(this);
         baseLayout.setLayoutParams(matchParentMatchParent);
         baseLayout.setGravity(Gravity.CENTER);
         baseLayout.setId(R.id.base_layout_id);
@@ -168,4 +176,5 @@ public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
 
         fragmentTransaction.commitAllowingStateLoss();
     }
+
 }

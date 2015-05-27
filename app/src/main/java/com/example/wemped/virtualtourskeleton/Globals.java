@@ -30,7 +30,7 @@ public class Globals {
         return stopsWithId;
     }
     static public Stop getStopById(int id){
-        if(Stops!=null){
+        if(Stops==null){
             int length = Stops.length;
             for (int i=0;i<length;i++){
                 if (Stops[i].getStopID() == id){
