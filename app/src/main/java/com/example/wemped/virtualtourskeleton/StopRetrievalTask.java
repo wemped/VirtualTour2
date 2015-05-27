@@ -39,7 +39,6 @@ public class StopRetrievalTask extends AsyncTask<Integer,Void,Stop[]>{
 
     protected void onPostExecute(Stop[] Result){
         if (Result != null) {
-            Arrays.sort(Result);
             Globals.setStops(Result);
             listener.onTaskCompleted(Result);
         }
