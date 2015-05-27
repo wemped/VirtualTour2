@@ -86,7 +86,6 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
         mainLayout.setOrientation(LinearLayout.VERTICAL);
         mainLayout.setVisibility(View.INVISIBLE);
         //mainView.setOnTouchListener(this);
-
         StopRetrievalTask sr = new StopRetrievalTask(this);
         sr.execute(STOP_ID);
     }
@@ -200,7 +199,6 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
 
     @Override
     public void onTaskCompleted(Stop[] s) {
-
         Stop thisStop = s[0];
         this.stop = thisStop;
         setTitle(this.stop.getStopName());
@@ -236,7 +234,6 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
                 e.printStackTrace();
             }
         }
-
     }
 
     @Override
