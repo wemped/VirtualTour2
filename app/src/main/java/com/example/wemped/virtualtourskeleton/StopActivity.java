@@ -55,6 +55,8 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stop);
+
+
         STOP_ID = getIntent().getExtras().getInt("STOP_ID");
         setTitle("");
         buildStop();

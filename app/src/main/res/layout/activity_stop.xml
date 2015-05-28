@@ -19,5 +19,6 @@
             android:layout_weight="1"
             android:contentDescription="Map">
         </ImageView>
+
     </LinearLayout>
 </ScrollView>
