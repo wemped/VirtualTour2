@@ -8,4 +8,12 @@
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/btn_tour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#003F87"
+        android:gravity="center_vertical"
+        android:text="Start The Tour!"/>
+
 </RelativeLayout>

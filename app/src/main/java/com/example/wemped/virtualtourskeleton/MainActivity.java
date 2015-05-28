@@ -1,6 +1,7 @@
 package com.example.wemped.virtualtourskeleton;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -126,10 +128,34 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
 
         /*IGNORING QR CODE STUFF FOR NOW*/
 
+        //footer layout
+        RelativeLayout footer = new RelativeLayout(this);
+        footer.setLayoutParams(matchParentMatchParent);
+
+        //create start tour button for footer
+        Button guide = new Button(this);
+        guide.setText("Start Guided Tour");
+        guide.setGravity(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+        guide.setOnClickListener(new Button.OnClickListener()
+        {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),StopActivity.class);
+                intent.putExtra("StopID",Globals.getStops()[0].getStopID());
+                startActivity(intent);
+
+            }
+
+        });
+        footer.addView(guide);
+
         /*Giving all views their correct parent*/
         baseLayout.addView(mainLayout);
         mainLayout.addView(mapView);
         mainLayout.addView(frameLayout);
+        mainLayout.addView(footer);
         frameLayout.addView(tabLayout);
 
         /*Set the activity's view*/
@@ -138,6 +164,8 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         /*Populate Views*/
         retrieveStops();
         retrieveMaps();
+
+
     }
 
     private void retrieveStops(){
