@@ -103,7 +103,6 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         titleString = Widget.getString("title");
         content = Widget.getString("content");
 
-
         //Title Text
         TextView textTitle = GenerateTitle(titleString);
 
@@ -224,6 +223,8 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
                 if (widgetType.equals("text")) {
 
                     AddTextWidget(widget);
+                    this.queuedContent ++;
+
                 }
                 else if (widgetType.equals("image")){
                     AddImageWidget(widget);
@@ -241,7 +242,11 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
                 e.printStackTrace();
             }
         }
-    }
+        /*onContentLoaded needs to be called manually here because
+        * AddTextWidget does not us a Task that calls onContentLoaded
+        * without this, text only stops will appear to have no content*/
+        onContentLoaded();
+     }
 
     @Override
     /*Unneeded for this activity, but is necessary for stub to be here*/
