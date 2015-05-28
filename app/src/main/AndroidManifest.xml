@@ -20,13 +20,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".StopActivity"
-<<<<<<< HEAD
-            android:parentActivityName=".MainActivity">
-
-=======
+            android:parentActivityName=".MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait">
->>>>>>> f708ca338bcd616128444c7edd59615390c26479
         </activity>
     </application>
 
