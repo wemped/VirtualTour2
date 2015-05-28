@@ -5,4 +5,16 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="WWUTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">@style/WWUAB30</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="WWUAB30"
+        parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">#003f87</item>
+    </style>
+
+
 </resources>
