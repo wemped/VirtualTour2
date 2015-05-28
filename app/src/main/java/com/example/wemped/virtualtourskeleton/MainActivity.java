@@ -2,6 +2,7 @@ package com.example.wemped.virtualtourskeleton;
 
 import android.app.ActionBar;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -31,8 +32,12 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class MainActivity extends ActionBarActivity implements OnTaskCompleted {
+/*
+ * Edit: class now extends FragmentActivity, which allows for the use of everything
+ * currently implemented in this file to continue working, while allowing for simple
+ * styling of the action bar to come from styles.xml -Nathaniel R.
+ */
+public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 
     private boolean stopsMapsArrived = false;
     private FragmentManager fragmentManager = null;

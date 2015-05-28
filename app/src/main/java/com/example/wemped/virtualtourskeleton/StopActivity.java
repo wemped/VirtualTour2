@@ -2,6 +2,7 @@ package com.example.wemped.virtualtourskeleton;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -24,8 +25,11 @@ import org.json.JSONObject;
 
 /**
  * Created by wemped on 5/19/15.
+ * Edit: class now extends FragmentActivity, which allows for the use of everything
+ * currently implemented in this file to continue working, while allowing for simple
+ * styling of the action bar to come from styles.xml -Nathaniel R.
  */
-public class StopActivity  extends ActionBarActivity implements OnContentLoaded,View.OnClickListener, View.OnTouchListener, OnTaskCompleted {
+public class StopActivity  extends FragmentActivity implements OnContentLoaded,View.OnClickListener, View.OnTouchListener, OnTaskCompleted {
     private static int STOP_ID = -1;
     private static int MAP_ID = -1;
     private static int queuedContent=0;
@@ -54,6 +58,9 @@ public class StopActivity  extends ActionBarActivity implements OnContentLoaded,
         STOP_ID = getIntent().getExtras().getInt("STOP_ID");
         setTitle("");
         buildStop();
+
+        //add back button to stops to bring users back to home page
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
