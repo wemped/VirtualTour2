@@ -37,7 +37,7 @@ import java.util.List;
  * currently implemented in this file to continue working, while allowing for simple
  * styling of the action bar to come from styles.xml -Nathaniel R.
  */
-public class MainActivity extends FragmentActivity implements OnTaskCompleted {
+public class MainActivity extends FragmentActivity implements OnTaskCompleted, OnContentLoaded {
 
     private boolean stopsMapsArrived = false;
     private FragmentManager fragmentManager = null;
@@ -91,6 +91,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 
     private void generateHome(){
         RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams fillParentWrapContent = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
 
         //Basically the Screen, the very base layout for the main screen of the app
         this.baseLayout = new RelativeLayout(this);
@@ -106,13 +107,13 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 
         //Linear layout that will contain the map and the tabs
         //In order to show tabs, the parent of the view that holds the tabs has to be a FRAMELAYOUT
-        FrameLayout mapLayout = new FrameLayout(this);
-        mapLayout.setLayoutParams(matchParentMatchParent);
-        mapLayout.setId(R.id.map_layout_id);
+        FrameLayout frameLayout = new FrameLayout(this);
+        frameLayout.setLayoutParams(matchParentMatchParent);
+        frameLayout.setId(R.id.frame_layout_id);
 
-        //This is the view within the mapLayout that will hold the map image
+        //This is the view within the baseLayout that will hold the map image
         MapImageView mapView = new MapImageView(this);
-        mapView.setLayoutParams(matchParentMatchParent);
+        mapView.setLayoutParams(fillParentWrapContent);
         //mapView.setAdjustViewBounds(true);
         mapView.setId(R.id.map_view_id);
         //mapView.setOnClickListener THIS SHOULD GET HANDLED IN MapImageView Class
@@ -127,9 +128,9 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 
         /*Giving all views their correct parent*/
         baseLayout.addView(mainLayout);
-        mainLayout.addView(mapLayout);
-        mapLayout.addView(mapView);
-        mapLayout.addView(tabLayout);
+        mainLayout.addView(mapView);
+        mainLayout.addView(frameLayout);
+        frameLayout.addView(tabLayout);
 
         /*Set the activity's view*/
         setContentView(baseLayout);
@@ -182,4 +183,21 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted {
         fragmentTransaction.commitAllowingStateLoss();
     }
 
+    //This gets called from tabHostfragment everytime the tab is changed.
+    //it changes the map on the main screen.
+    public void tabChange(String tabIndicator){
+        MapImageView mapImageView = (MapImageView) findViewById(R.id.map_view_id);
+        Map[] maps = Globals.getMaps();
+        for (int m=0;m<maps.length;m++){
+            if (maps[m].getMapDescription().equals(tabIndicator)){
+                ImageRetrievalTask imr = new ImageRetrievalTask(mapImageView,MainActivity.this);
+                imr.execute(maps[m].getMapUrl());
+            }
+        }
+    }
+
+    @Override
+    public void onContentLoaded() {
+
+    }
 }

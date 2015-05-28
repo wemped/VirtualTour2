@@ -37,7 +37,13 @@ public class ImageRetrievalTask extends AsyncTask<String, Void, Bitmap> {
 
     protected void onPostExecute(Bitmap result) {
         Image.setAlpha(1f);
-        Image.setImageBitmap(ImageProcessor.decodeSampledBitmapFromResource(result, Image.getWidth(), Image.getHeight()));
+        /*Log.v("imageRT","width -> " + Image.getWidth());
+        Log.v("imageRT","height -> " + Image.getHeight());*/
+
+        //Image.setImageBitmap(ImageProcessor.decodeSampledBitmapFromResource(result, Image.getWidth(), Image.getHeight()));
+        /*Not sure why, but height needs to be zero or else the size of the map will keep growing*/
+        Image.setImageBitmap(ImageProcessor.decodeSampledBitmapFromResource(result, Image.getWidth(), 0));
+
         Image.setVisibility(View.VISIBLE);
         if (this.contentloader != null)
         {

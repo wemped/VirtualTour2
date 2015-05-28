@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,12 +29,18 @@ public class TabHostFragment extends Fragment{
         this.maps = Globals.getMaps();
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState){
         this.tabHost = new FragmentTabHost(getActivity());
-        this.tabHost.setup(getActivity(),getChildFragmentManager(),R.id.frag_tab_host);
+        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String s) {
+                ((MainActivity)getActivity()).tabChange(s);
+            }
+        });
         int length = this.maps.length;
-
+        this.tabHost.setup(getActivity(),getChildFragmentManager(),R.id.frag_tab_host);
         for (int i=0;i<length;i++){
             /*Pass data to the tab by adding it to this bundle*/
             Bundle tabBundle = new Bundle();
