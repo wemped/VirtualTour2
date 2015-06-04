@@ -1,6 +1,8 @@
 package com.example.wemped.virtualtourskeleton;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
@@ -54,15 +56,33 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stop);
+    }
 
+    public void onResume() {
+        super.onResume();
+        setContentView(R.layout.activity_stop);
 
         STOP_ID = getIntent().getExtras().getInt("STOP_ID");
         setTitle("");
-        buildStop();
 
-        //add back button to stops to bring users back to home page
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (Globals.isOnline(this)){
+            buildStop();
+
+            //add back button to stops to bring users back to home page
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("No internet connection")
+                    .setMessage("Please connect your device to the internet before using this application")
+                    .setPositiveButton("Retry connection", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            onResume();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
     }
 
     @Override

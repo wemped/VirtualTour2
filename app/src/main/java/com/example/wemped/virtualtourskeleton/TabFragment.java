@@ -2,6 +2,7 @@ package com.example.wemped.virtualtourskeleton;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Created by wemped on 5/7/15.
@@ -49,17 +52,19 @@ public class TabFragment extends Fragment{
         this.gridView = new GridView(getActivity());
 
         mainTabLayout.addView(this.gridView);
-        this.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        //THIS IS NEEDED IF THE ITEMS IN THE GRID ARE NOT CLICKABLE IN NATURE (ex. textviews are not clickable but buttons are)
+        /*this.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //Create intent to stopActivity
                 //go to intent
                 Intent stopIntent = new Intent(getActivity(),StopActivity.class);
-                stopIntent.putExtra("STOP_ID",view.getId());
-
+                stopIntent.putExtra("STOP_ID",view.getTag().toString());
+                Log.v("onClick",view.getTag().toString());
                 startActivity(stopIntent);
             }
-        });
+        });*/
         this.gridView.setNumColumns(2);
         this.gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
         return mainTabLayout;
@@ -75,15 +80,6 @@ public class TabFragment extends Fragment{
         gridView.setHorizontalSpacing(50);
     }
 
-    /*@Override
-    public void onListItemClick(ListView l,View v, int position, long id){
-        //Create intent to stopActivity
-        //go to intent
-        Intent stopIntent = new Intent(getActivity(),StopActivity.class);
-        stopIntent.putExtra("STOP_ID",v.getId());
-
-        startActivity(stopIntent);
-    }*/
 
     public int getMapId(){
         return this.mapId;
@@ -109,19 +105,26 @@ public class TabFragment extends Fragment{
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
             Stop stop = getItem(position);
-            //SquareViewGroup v = new SquareViewGroup(getContext());
             if(convertView==null){
                 convertView=LayoutInflater.from(getContext()).inflate(R.layout.stop_list_item,parent,false);
             }
-            TextView name = (TextView) convertView.findViewById(R.id.textView);
-            name.setText(stop.getStopName());
-            convertView.setId(stop.getStopID());
 
-            //v.addView(convertView);
-            //v.setId(stop.getStopID());
-            /*LinearLayout stop_list_item_linear = (LinearLayout)convertView.findViewById(R.id.stop_list_item_linear);
-            int width = stop_list_item_linear.getWidth();
-            stop_list_item_linear.setMinimumHeight(width);*/
+            FancyButton stopButton = (FancyButton)convertView.findViewById(R.id.stop_button);
+            stopButton.setText(stop.getStopName());
+            stopButton.setBackgroundColor(Color.parseColor("#003f87"));
+            stopButton.setTextSize(17);
+            stopButton.setRadius(5);
+            stopButton.setTag(stop.getStopID());
+            stopButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    Intent stopIntent = new Intent(getActivity(),StopActivity.class);
+                    stopIntent.putExtra("STOP_ID",Integer.valueOf(view.getTag().toString()));
+                    Log.v("NEWonClick",view.getTag().toString());
+                    startActivity(stopIntent);
+                }
+            });
 
             return convertView;
         }

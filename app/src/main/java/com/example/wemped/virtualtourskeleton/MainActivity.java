@@ -1,6 +1,10 @@
 package com.example.wemped.virtualtourskeleton;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -56,14 +60,28 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
             baseLayout.removeAllViews();
         }
 
-        if (this.getIntent().getExtras() != null){
-            //Check first run stuff?
-            //Think this is only necessary for initial popup
+        if (Globals.isOnline(this)) {
+            if (this.getIntent().getExtras() != null) {
+                //Check first run stuff?
+                //Think this is only necessary for initial popup
+            } else {
+                //
+            }
+            stopsMapsArrived = false;
+            generateHome();
         }else{
-            //
+            new AlertDialog.Builder(this)
+                    .setTitle("No internet connection")
+                    .setMessage("Please connect your device to the internet before using this application")
+                    .setPositiveButton("Retry connection", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            onResume();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
-        stopsMapsArrived = false;
-        generateHome();
     }
 
     @Override
