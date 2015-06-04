@@ -131,11 +131,15 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         //footer layout
         RelativeLayout footer = new RelativeLayout(this);
         footer.setLayoutParams(matchParentMatchParent);
+        footer.setGravity(RelativeLayout.ALIGN_PARENT_BOTTOM);
 
         //create start tour button for footer
         Button guide = new Button(this);
         guide.setText("Start Guided Tour");
-        guide.setGravity(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        footer.setGravity(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        guide.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
 
         guide.setOnClickListener(new Button.OnClickListener()
         {
@@ -143,11 +147,9 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),StopActivity.class);
-                intent.putExtra("StopID",Globals.getStops()[0].getStopID());
+                intent.putExtra("STOP_ID",Globals.getStops()[0].getStopID());
                 startActivity(intent);
-
             }
-
         });
         footer.addView(guide);
 
@@ -155,8 +157,8 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         baseLayout.addView(mainLayout);
         mainLayout.addView(mapView);
         mainLayout.addView(frameLayout);
-        mainLayout.addView(footer);
         frameLayout.addView(tabLayout);
+        baseLayout.addView(footer);
 
         /*Set the activity's view*/
         setContentView(baseLayout);
@@ -164,8 +166,6 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         /*Populate Views*/
         retrieveStops();
         retrieveMaps();
-
-
     }
 
     private void retrieveStops(){
