@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.example.wemped.virtualtourskeleton.SquareRelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/grid_element_main"
-    android:layout_width="fill_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
+    android:layout_width="match_parent"
     android:gravity="center"
-    android:padding="40dp">
-        <TextView
-            android:layout_width="fill_parent"
+    android:padding="20dp"
+    android:layout_margin="20dp"
+    android:weightSum="1">
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:background="#003f87"
-            android:gravity="center"
-            android:id="@+id/textView"/>
-
-
-</com.example.wemped.virtualtourskeleton.SquareRelativeLayout>
+            android:id="@+id/stop_button"
+            android:layout_weight="1">
+            </mehdi.sakout.fancybuttons.FancyButton>
+</LinearLayout>

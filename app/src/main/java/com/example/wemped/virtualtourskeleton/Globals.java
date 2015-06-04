@@ -1,5 +1,8 @@
 package com.example.wemped.virtualtourskeleton;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.renderscript.Element;
 
 import java.util.ArrayList;
@@ -49,4 +52,27 @@ public class Globals {
         Maps = maps;
     }
     static public Map[] getMaps() {return Maps;}
+
+    /*Misc*/
+    static public boolean isOnline(Context context) {
+
+
+        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+        if(networkInfo != null) {
+            int type = networkInfo.getType();
+        }else{
+            return false;
+        }
+        String typeName = networkInfo.getTypeName();
+
+        boolean connected = networkInfo.isConnected();
+
+        if (connected)
+            return true;
+        else
+            return false;
+    }
 }
