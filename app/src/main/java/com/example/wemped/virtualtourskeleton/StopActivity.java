@@ -116,10 +116,12 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         mainLayout.setVisibility(View.INVISIBLE);
         //mainView.setOnTouchListener(this);
         StopRetrievalTask sr = new StopRetrievalTask(this);
+        //Log.v("building stop with id", Integer.toString(STOP_ID));
         sr.execute(STOP_ID);
     }
 
     private void AddTextWidget(JSONObject Widget) throws JSONException{
+        //Log.v("adding text widget","..");
         String titleString, content = "";
 
         titleString = Widget.getString("title");
@@ -139,11 +141,11 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         //Add content to screen
         MainLayout.addView(textTitle);
         MainLayout.addView(textContent);
-
+        //Log.v("adding text widget","complete!");
     }
 
     private void AddImageWidget(JSONObject Widget) throws JSONException{
-
+        //Log.v("adding image widget","..");
         //Retrieve values
         String urlString = Widget.getString("url");
         String titleString = Widget.getString("title");
@@ -161,11 +163,11 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
         MainLayout.addView(textTitle);
         MainLayout.addView(imageContent);
-
+        //Log.v("adding image widget","complete!");
     }
 
     private void AddVideoWidget(JSONObject Widget) throws JSONException {
-
+        //Log.v("adding video widget","..");
         //Retrieve Values
         String urlString = Widget.getString("url");
         String titleString = Widget.getString("title");
@@ -203,6 +205,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
         MainLayout.addView(textTitle);
         MainLayout.addView(videoLayout);
+        //Log.v("adding text widget","complete!");
     }
     @Override
     public void onClick(View v) {
@@ -211,6 +214,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     @Override
     public void onContentLoaded() {
         this.queuedContent --;
+        //Log.v("onContentLoaded -> queuedContent = ", Integer.toString(this.queuedContent));
 
         if (queuedContent == 0)
         {
@@ -236,6 +240,8 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         }catch(JSONException e){
             e.printStackTrace();
         }
+
+        boolean hasTextWidget = false;
         for(int i = 0; i < stopContent.length(); i++)
         {
             try {
@@ -243,9 +249,9 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
                 String widgetType = widget.getString("type");
 
                 if (widgetType.equals("text")) {
-
+                    hasTextWidget = true;
                     AddTextWidget(widget);
-                    this.queuedContent ++;
+                    //this.queuedContent ++;
 
                 }
                 else if (widgetType.equals("image")){
@@ -267,7 +273,10 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         /*onContentLoaded needs to be called manually here because
         * AddTextWidget does not us a Task that calls onContentLoaded
         * without this, text only stops will appear to have no content*/
-        onContentLoaded();
+        if(hasTextWidget){
+            this.queuedContent++;
+            onContentLoaded();
+        }
      }
 
     @Override
