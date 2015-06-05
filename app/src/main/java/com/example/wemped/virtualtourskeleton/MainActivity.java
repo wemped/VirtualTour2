@@ -2,6 +2,9 @@ package com.example.wemped.virtualtourskeleton;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -58,14 +61,28 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
             baseLayout.removeAllViews();
         }
 
-        if (this.getIntent().getExtras() != null){
-            //Check first run stuff?
-            //Think this is only necessary for initial popup
+        if (Globals.isOnline(this)) {
+            if (this.getIntent().getExtras() != null) {
+                //Check first run stuff?
+                //Think this is only necessary for initial popup
+            } else {
+                //
+            }
+            stopsMapsArrived = false;
+            generateHome();
         }else{
-            //
+            new AlertDialog.Builder(this)
+                    .setTitle("No internet connection")
+                    .setMessage("Please connect your device to the internet before using this application")
+                    .setPositiveButton("Retry connection", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            onResume();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
-        stopsMapsArrived = false;
-        generateHome();
     }
 
     @Override
@@ -130,13 +147,15 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
 
         //footer layout
         RelativeLayout footer = new RelativeLayout(this);
-        footer.setLayoutParams(matchParentMatchParent);
-        footer.setGravity(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        //Set up the layout params for the footer
+        RelativeLayout.LayoutParams botlay = new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.MATCH_PARENT,
+                                                                                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        botlay.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        footer.setLayoutParams(botlay);
 
         //create start tour button for footer
         Button guide = new Button(this);
         guide.setText("Start Guided Tour");
-        footer.setGravity(RelativeLayout.ALIGN_PARENT_BOTTOM);
         guide.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -152,6 +171,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
             }
         });
         footer.addView(guide);
+        footer.setBackgroundColor(Color.parseColor("#003f87"));
 
         /*Giving all views their correct parent*/
         baseLayout.addView(mainLayout);
