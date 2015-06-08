@@ -5,6 +5,8 @@ import java.lang.*;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
@@ -61,14 +63,33 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+    }
+
+    public void onResume() {
+        super.onResume();
         setContentView(R.layout.activity_stop);
 
         STOP_ID = getIntent().getExtras().getInt("STOP_ID");
         setTitle("");
-        buildStop();
 
-        //add back button to stops to bring users back to home page
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (Globals.isOnline(this)){
+            buildStop();
+
+            //add back button to stops to bring users back to home page
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            new AlertDialog.Builder(this)
+                    .setTitle("No internet connection")
+                    .setMessage("Please connect your device to the internet before using this application")
+                    .setPositiveButton("Retry connection", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            onResume();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
     }
 
     @Override
@@ -102,15 +123,16 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         mainLayout.setVisibility(View.INVISIBLE);
         //mainView.setOnTouchListener(this);
         StopRetrievalTask sr = new StopRetrievalTask(this);
+        //Log.v("building stop with id", Integer.toString(STOP_ID));
         sr.execute(STOP_ID);
     }
 
     private void AddTextWidget(JSONObject Widget) throws JSONException{
+        //Log.v("adding text widget","..");
         String titleString, content = "";
 
         titleString = Widget.getString("title");
         content = Widget.getString("content");
-
 
         //Title Text
         TextView textTitle = GenerateTitle(titleString);
@@ -126,11 +148,11 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         //Add content to screen
         MainLayout.addView(textTitle);
         MainLayout.addView(textContent);
-
+        //Log.v("adding text widget","complete!");
     }
 
     private void AddImageWidget(JSONObject Widget) throws JSONException{
-
+        //Log.v("adding image widget","..");
         //Retrieve values
         String urlString = Widget.getString("url");
         String titleString = Widget.getString("title");
@@ -148,11 +170,11 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
         MainLayout.addView(textTitle);
         MainLayout.addView(imageContent);
-
+        //Log.v("adding image widget","complete!");
     }
 
     private void AddVideoWidget(JSONObject Widget) throws JSONException {
-
+        //Log.v("adding video widget","..");
         //Retrieve Values
         String urlString = Widget.getString("url");
         String titleString = Widget.getString("title");
@@ -190,6 +212,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
         MainLayout.addView(textTitle);
         MainLayout.addView(videoLayout);
+        //Log.v("adding text widget","complete!");
     }
     @Override
     public void onClick(View v) {
@@ -204,6 +227,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     @Override
     public void onContentLoaded() {
         this.queuedContent --;
+        //Log.v("onContentLoaded -> queuedContent = ", Integer.toString(this.queuedContent));
 
         if (queuedContent == 0)
         {
@@ -295,6 +319,9 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         MainLayout.addView(GenerateMarkedMap(thisStop.getStopPositionX(),thisStop.getStopPositionY(),thisStop.getStopMapID()));
 
 
+
+        boolean hasTextWidget = false;
+
         for(int i = 0; i < stopContent.length(); i++)
         {
             try {
@@ -305,8 +332,10 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
 
 
                 if (widgetType.equals("text")) {
-
+                    hasTextWidget = true;
                     AddTextWidget(widget);
+                    //this.queuedContent ++;
+
                 }
                 else if (widgetType.equals("image")){
                     AddImageWidget(widget);
@@ -325,7 +354,14 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
                 e.printStackTrace();
             }
         }
-    }
+        /*onContentLoaded needs to be called manually here because
+        * AddTextWidget does not us a Task that calls onContentLoaded
+        * without this, text only stops will appear to have no content*/
+        if(hasTextWidget){
+            this.queuedContent++;
+            onContentLoaded();
+        }
+     }
 
     @Override
     /*Unneeded for this activity, but is necessary for stub to be here*/
