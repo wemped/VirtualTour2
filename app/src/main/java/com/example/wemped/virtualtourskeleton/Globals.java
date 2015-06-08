@@ -1,9 +1,9 @@
 package com.example.wemped.virtualtourskeleton;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.renderscript.Element;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,5 +74,8 @@ public class Globals {
             return true;
         else
             return false;
+    }
+    static public Typeface getAvenir(Context c){
+        return Typeface.createFromAsset(c.getAssets(), "fonts/avenir-light.ttf");
     }
 }

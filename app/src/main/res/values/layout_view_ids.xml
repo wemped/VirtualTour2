@@ -7,4 +7,5 @@
     <item type="id" name="map_view_id"/>
     <item type="id" name="stop_button_layout_id"/>
     <item type="id" name="tab_layout_id"/>
+    <item type="id" name="map_layout_id"/>
 </resources>

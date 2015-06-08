@@ -3,6 +3,7 @@ package com.example.wemped.virtualtourskeleton;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
@@ -53,6 +54,8 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT
     );
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -135,6 +138,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         textContent.setLayoutParams(matchParentMatchParent);
         textContent.setText("\t" + content);
         textContent.setGravity(Gravity.LEFT);
+        textContent.setTypeface(Globals.getAvenir(this));
 
         LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
 
@@ -287,7 +291,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     private TextView GenerateTitle(String titleText) {
 
         //Make the Title Text Underlined
-        SpannableString underlinedTitle = new SpannableString(titleText);
+        SpannableString underlinedTitle = new SpannableString("\n" + titleText);
         underlinedTitle.setSpan(new UnderlineSpan(), 0, titleText.length(), 0);
 
         //Title Text
@@ -297,6 +301,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         textTitle.setLayoutParams(titleparams);
         textTitle.setTextSize(20);
         textTitle.setText(underlinedTitle);
+        textTitle.setTypeface(Globals.getAvenir(this));
 
         return textTitle;
     }
