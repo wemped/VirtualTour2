@@ -3,6 +3,7 @@ package com.example.wemped.virtualtourskeleton;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
@@ -14,6 +15,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -50,6 +54,8 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         /*all creation now will happen in onResume to make sure all values are filled
         * in when returning from a seperate activity*/
     }
@@ -129,6 +135,12 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         frameLayout.setLayoutParams(matchParentMatchParent);
         frameLayout.setId(R.id.frame_layout_id);
 
+
+        RelativeLayout mapLayout = new RelativeLayout(this);
+        mapLayout.setLayoutParams(fillParentWrapContent);
+        mapLayout.setId(R.id.map_layout_id);
+
+
         //This is the view within the baseLayout that will hold the map image
         MapImageView mapView = new MapImageView(this);
         mapView.setLayoutParams(fillParentWrapContent);
@@ -146,7 +158,8 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
 
         /*Giving all views their correct parent*/
         baseLayout.addView(mainLayout);
-        mainLayout.addView(mapView);
+        mainLayout.addView(mapLayout);
+        mapLayout.addView(mapView);
         mainLayout.addView(frameLayout);
         frameLayout.addView(tabLayout);
 
@@ -177,6 +190,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         /*if we have both the maps and stops from the database, create our tabs and fill them in.*/
         if (stopsMapsArrived){
             createFloorTabs(this);
+            addMapMarkers();
         }
         stopsMapsArrived = true;
     }
@@ -211,6 +225,16 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
                 ImageRetrievalTask imr = new ImageRetrievalTask(mapImageView,MainActivity.this);
                 imr.execute(maps[m].getMapUrl());
             }
+        }
+    }
+
+    public void addMapMarkers(){
+        Stop[] stops = Globals.getStops();
+        int length = stops.length;
+        for (int i=0;i<length;i++){
+            Stop currStop = stops[i];
+            float x = currStop.getStopPositionX();
+            float y = currStop.getStopPositionY();
         }
     }
 

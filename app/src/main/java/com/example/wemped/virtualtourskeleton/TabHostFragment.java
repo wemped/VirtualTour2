@@ -1,6 +1,7 @@
 package com.example.wemped.virtualtourskeleton;
 
 import android.app.ActionBar;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
@@ -33,6 +34,7 @@ public class TabHostFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState){
         this.tabHost = new FragmentTabHost(getActivity());
+        //tabHost.setBackgroundColor(Color.parseColor("#006B3F"));
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String s) {

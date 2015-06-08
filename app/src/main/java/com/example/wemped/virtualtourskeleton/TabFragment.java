@@ -5,21 +5,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -33,6 +29,7 @@ public class TabFragment extends Fragment{
     private String tabName = null;
     private int tabId = 0;
     private int mapId = 0;
+    private int numCols = 0;
     ArrayList<Stop> stops = null;
     GridView gridView;
 
@@ -48,10 +45,13 @@ public class TabFragment extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater infalter, ViewGroup container, Bundle savedInstanceState){
-        RelativeLayout mainTabLayout = new RelativeLayout(getActivity());
+        //RelativeLayout mainTabLayout = new RelativeLayout(getActivity());
+        //RelativeLayout.LayoutParams mainParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        //mainTabLayout.setLayoutParams(mainParams);
+
         this.gridView = new GridView(getActivity());
 
-        mainTabLayout.addView(this.gridView);
+        //mainTabLayout.addView(this.gridView);
 
         //THIS IS NEEDED IF THE ITEMS IN THE GRID ARE NOT CLICKABLE IN NATURE (ex. textviews are not clickable but buttons are)
         /*this.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -65,9 +65,27 @@ public class TabFragment extends Fragment{
                 startActivity(stopIntent);
             }
         });*/
-        this.gridView.setNumColumns(2);
-        this.gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-        return mainTabLayout;
+
+        int numStops = this.stops.size();
+        if (numStops > 4){
+            this.numCols = 3;
+            this.gridView.setNumColumns(3);
+            gridView.setPadding(50,50,50,50);
+        } else {
+            this.numCols = 1;
+            this.gridView.setNumColumns(1);
+            gridView.setPadding(150,50,150,50);
+        }
+
+        //this.gridView.setNumColumns(3);
+        //gridView.setBackgroundColor(Color.parseColor("#0083d6"));
+        //ViewGroup.LayoutParams gridParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        //gridParams.setMargins(10,10,10,10);
+        //gridView.setLayoutParams(gridParams);
+        //this.gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+        //return mainTabLayout;
+        //gridView.setPadding(50,50,50,50);
+        return gridView;
     }
 
 
@@ -78,6 +96,8 @@ public class TabFragment extends Fragment{
         //setListAdapter(adapter);
         this.gridView.setAdapter(adapter);
         gridView.setHorizontalSpacing(50);
+        gridView.setVerticalSpacing(50);
+        gridView.setGravity(Gravity.CENTER);
     }
 
 
@@ -112,9 +132,11 @@ public class TabFragment extends Fragment{
             FancyButton stopButton = (FancyButton)convertView.findViewById(R.id.stop_button);
             stopButton.setText(stop.getStopName());
             stopButton.setBackgroundColor(Color.parseColor("#003f87"));
-            stopButton.setTextSize(17);
-            stopButton.setRadius(5);
+            stopButton.setFocusBackgroundColor(Color.parseColor("#0083d6"));
+            stopButton.setTextSize(20);
+            stopButton.setRadius(15);
             stopButton.setTag(stop.getStopID());
+            stopButton.setCustomTextFont("avenir-light.ttf");
             stopButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -125,7 +147,7 @@ public class TabFragment extends Fragment{
                     startActivity(stopIntent);
                 }
             });
-
+            stopButton.setMinimumWidth(parent.getWidth());
             return convertView;
         }
     }
