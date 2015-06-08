@@ -1,6 +1,10 @@
 package com.example.wemped.virtualtourskeleton;
 
+import java.util.*;
+import java.lang.*;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
@@ -12,6 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.GestureDetector.*;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,6 +62,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stop);
+
         STOP_ID = getIntent().getExtras().getInt("STOP_ID");
         setTitle("");
         buildStop();
@@ -185,7 +193,13 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     }
     @Override
     public void onClick(View v) {
+        /*if (v instanceof ImageView)
+        {
+            Intent intent = new Intent(this, VideoPlayerActivity.class);
+            intent.putExtra("url",v.getContentDescription());
+            startActivity(intent);
 
+        }*/
     }
     @Override
     public void onContentLoaded() {
@@ -204,10 +218,71 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         return true;
     }
 
+    private FrameLayout GenerateMarkedMap(float markx, float marky, int MapId)
+    {
+        ArrayList<Float> marks = new ArrayList<Float>();
+
+        Stop[] stops = Globals.getStops();
+
+        for (Stop s : stops)
+        {
+            if (s.getStopMapID() == MapId)
+            {
+                marks.add(s.getStopPositionX());
+                marks.add(s.getStopPositionY());
+            }
+        }
+
+        FrameLayout mapLayout = new FrameLayout(this);
+        mapLayout.setLayoutParams(matchParentMatchParent);
+        //Put map in layout
+        MapImageView mapView = new MapImageView(this);
+        mapView.setMapMarks(marks);
+        mapView.setLayoutParams(matchParentWrapContent);
+        mapView.setId(R.id.titleId);
+        mapView.setImageResource(R.drawable.placeholder);
+        mapView.setVisibility(View.INVISIBLE);
+        mapView.setSelectedMark(markx, marky);
+        mapView.setOnClickListener(this);
+
+        Map map = null;
+
+        for (Map m : Globals.getMaps())
+        {
+            if (m.getMapId() == MapId)
+            {
+                map = m;
+                break;
+            }
+        }
+
+        final Map thisMap = map;
+        mapView.setContentDescription(thisMap.getMapUrl() + "," + thisMap.getMapId());
+
+        mapView.post(new Runnable(){
+
+            @Override
+            public void run() {
+                MapImageView map = (MapImageView) findViewById(R.id.titleId);
+                ImageRetrievalTask irt = new ImageRetrievalTask(map,StopActivity.this);
+                irt.execute(thisMap.getMapUrl());
+                queuedContent++;
+
+            }
+
+        });
+        mapView.setAdjustViewBounds(true);
+        mapLayout.addView(mapView);
+
+        return mapLayout;
+    }
+
+
     @Override
     public void onTaskCompleted(Stop[] s) {
         Stop thisStop = s[0];
         this.stop = thisStop;
+        this.MAP_ID = thisStop.getStopMapID();
         setTitle(this.stop.getStopName());
         JSONArray stopContent = null;
         try {
@@ -215,11 +290,19 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         }catch(JSONException e){
             e.printStackTrace();
         }
+
+        LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
+        MainLayout.addView(GenerateMarkedMap(thisStop.getStopPositionX(),thisStop.getStopPositionY(),thisStop.getStopMapID()));
+
+
         for(int i = 0; i < stopContent.length(); i++)
         {
             try {
                 JSONObject widget = stopContent.getJSONObject(i);
                 String widgetType = widget.getString("type");
+
+
+
 
                 if (widgetType.equals("text")) {
 
@@ -234,6 +317,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
                     AddVideoWidget(widget);
                     this.queuedContent ++;
                 }
+
 
 
             } catch (JSONException e) {
