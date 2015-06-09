@@ -3,6 +3,7 @@ package com.example.wemped.virtualtourskeleton;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -132,7 +133,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         //Linear layout that will contain the map and the tabs
         //In order to show tabs, the parent of the view that holds the tabs has to be a FRAMELAYOUT
         FrameLayout frameLayout = new FrameLayout(this);
-        frameLayout.setLayoutParams(matchParentMatchParent);
+        frameLayout.setLayoutParams(fillParentWrapContent);
         frameLayout.setId(R.id.frame_layout_id);
 
 
