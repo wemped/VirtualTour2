@@ -68,8 +68,8 @@ public class TabFragment extends Fragment{
 
         int numStops = this.stops.size();
         if (numStops > 4){
-            this.numCols = 3;
-            this.gridView.setNumColumns(3);
+            this.numCols = 2;
+            this.gridView.setNumColumns(2);
             gridView.setPadding(50,50,50,50);
         } else {
             this.numCols = 1;
@@ -79,9 +79,10 @@ public class TabFragment extends Fragment{
 
         //this.gridView.setNumColumns(3);
         //gridView.setBackgroundColor(Color.parseColor("#0083d6"));
-        //ViewGroup.LayoutParams gridParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewGroup.LayoutParams gridParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         //gridParams.setMargins(10,10,10,10);
-        //gridView.setLayoutParams(gridParams);
+        gridView.setLayoutParams(gridParams);
+        gridView.setScrollContainer(false);
         //this.gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
         //return mainTabLayout;
         //gridView.setPadding(50,50,50,50);

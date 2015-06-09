@@ -135,7 +135,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         //Linear layout that will contain the map and the tabs
         //In order to show tabs, the parent of the view that holds the tabs has to be a FRAMELAYOUT
         FrameLayout frameLayout = new FrameLayout(this);
-        frameLayout.setLayoutParams(matchParentMatchParent);
+        frameLayout.setLayoutParams(fillParentWrapContent);
         frameLayout.setId(R.id.frame_layout_id);
 
 
