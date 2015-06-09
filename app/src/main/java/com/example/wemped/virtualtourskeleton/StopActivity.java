@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -19,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.view.GestureDetector.*;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
@@ -119,14 +121,17 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
 
 
     private void buildStop(){
+
         ScrollView mainView = (ScrollView) findViewById(R.id.scroll_stop);
+
 
         LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layout_stop);
         mainLayout.setOrientation(LinearLayout.VERTICAL);
         mainLayout.setVisibility(View.INVISIBLE);
         //mainView.setOnTouchListener(this);
         StopRetrievalTask sr = new StopRetrievalTask(this);
-        //Log.v("building stop with id", Integer.toString(STOP_ID));
+        //Log.v("building stop with id", Integer.toString(STOP_ID));+
+
         sr.execute(STOP_ID);
     }
 
@@ -236,6 +241,23 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
 
         if (queuedContent == 0)
         {
+
+            //linear layout wrapping scroll view so that footer can be at the bottom of screen all the time
+            LinearLayout wrapper = (LinearLayout) findViewById(R.id.stop_wrapper);
+
+            //add footer
+            //footer layout
+            LinearLayout footer = (LinearLayout)findViewById(R.id.footer);
+
+            //Next button
+            Button next = new Button(this);
+            next.setText("Next Stop");
+
+            //add buttons to footer and footer to screen
+            footer.addView(next);
+            footer.setBackgroundColor(Color.parseColor("#003f87"));
+
+
             //loadingPopup.dismiss();
             LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
             MainLayout.setVisibility(View.VISIBLE);
