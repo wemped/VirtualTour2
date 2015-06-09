@@ -1,8 +1,10 @@
 package com.example.wemped.virtualtourskeleton;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -156,12 +159,41 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
 
         /*IGNORING QR CODE STUFF FOR NOW*/
 
+        //footer layout
+        RelativeLayout footer = new RelativeLayout(this);
+        //Set up the layout params for the footer
+        RelativeLayout.LayoutParams botlay = new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.MATCH_PARENT,
+                                                                                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        botlay.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        footer.setLayoutParams(botlay);
+
+        //create start tour button for footer
+        Button guide = new Button(this);
+        guide.setText("Start Guided Tour");
+        guide.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        guide.setOnClickListener(new Button.OnClickListener()
+        {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),StopActivity.class);
+                intent.putExtra("STOP_ID",Globals.getStops()[0].getStopID());
+                startActivity(intent);
+            }
+        });
+        footer.addView(guide);
+        footer.setBackgroundColor(Color.parseColor("#003f87"));
+
         /*Giving all views their correct parent*/
         baseLayout.addView(mainLayout);
         mainLayout.addView(mapLayout);
         mapLayout.addView(mapView);
         mainLayout.addView(frameLayout);
         frameLayout.addView(tabLayout);
+        baseLayout.addView(footer);
 
         /*Set the activity's view*/
         setContentView(baseLayout);

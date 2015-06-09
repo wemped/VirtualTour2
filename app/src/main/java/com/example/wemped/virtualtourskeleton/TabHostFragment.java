@@ -26,6 +26,7 @@ public class TabHostFragment extends Fragment{
         this.maps = maps;
     }
 
+
     public TabHostFragment(){
         this.maps = Globals.getMaps();
     }
