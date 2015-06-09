@@ -143,7 +143,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         //Content Text
         TextView textContent = new TextView(this);
         textContent.setLayoutParams(matchParentMatchParent);
-        textContent.setText("\t" + content);
+        textContent.setText(content);
         textContent.setGravity(Gravity.LEFT);
         textContent.setTypeface(Globals.getAvenir(this));
 
@@ -159,6 +159,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         //Log.v("adding image widget","..");
         //Retrieve values
         String urlString = Widget.getString("url");
+        Log.v("url->",urlString);
         String titleString = Widget.getString("title");
 
         //Generate Content

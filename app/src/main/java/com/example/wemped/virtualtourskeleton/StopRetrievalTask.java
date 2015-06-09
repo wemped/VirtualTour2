@@ -19,7 +19,8 @@ import java.util.Arrays;
  */
 public class StopRetrievalTask extends AsyncTask<Integer,Void,Stop[]>{
 
-    private static final String STOP_URL = "http://sw.cs.wwu.edu/~vut3/virtualtour/jsonapi?stopid=";
+    //private static final String STOP_URL = "http://sw.cs.wwu.edu/~vut3/virtualtour/jsonapi?stopid=";
+    private static final String STOP_URL = "http://sw.cs.wwu.edu/~ragsdan/csvirtualtour/jsonapi?stopid=";
 
     private OnTaskCompleted listener;
     public StopRetrievalTask(OnTaskCompleted listener){
