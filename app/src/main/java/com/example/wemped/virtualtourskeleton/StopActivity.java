@@ -1,9 +1,14 @@
 package com.example.wemped.virtualtourskeleton;
 
+import java.util.*;
+import java.lang.*;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +21,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.view.GestureDetector.*;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,6 +63,8 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
             RelativeLayout.LayoutParams.WRAP_CONTENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT
     );
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -111,8 +121,6 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
 
 
     private void buildStop(){
-        //linear layout wrapping scroll view so that footer can be at the bottom of screen all the time
-        LinearLayout wrapper = (LinearLayout) findViewById(R.id.stop_wrapper);
 
         ScrollView mainView = (ScrollView) findViewById(R.id.scroll_stop);
 
@@ -123,23 +131,6 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         //mainView.setOnTouchListener(this);
         StopRetrievalTask sr = new StopRetrievalTask(this);
         //Log.v("building stop with id", Integer.toString(STOP_ID));+
-
-
-        //add footer
-        //footer layout
-        RelativeLayout footer = new RelativeLayout(this);
-        //Set up the layout params for the footer
-        RelativeLayout.LayoutParams botlay = new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        botlay.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        footer.setLayoutParams(botlay);
-
-        Button next = new Button(this);
-        next.setText("Next Stop");
-
-        footer.addView(next);
-        footer.setBackgroundColor(Color.parseColor("#003f87"));
-        wrapper.addView(footer);
 
         sr.execute(STOP_ID);
     }
@@ -159,6 +150,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         textContent.setLayoutParams(matchParentMatchParent);
         textContent.setText("\t" + content);
         textContent.setGravity(Gravity.LEFT);
+        textContent.setTypeface(Globals.getAvenir(this));
 
         LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
 
@@ -233,7 +225,13 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     }
     @Override
     public void onClick(View v) {
+        /*if (v instanceof ImageView)
+        {
+            Intent intent = new Intent(this, VideoPlayerActivity.class);
+            intent.putExtra("url",v.getContentDescription());
+            startActivity(intent);
 
+        }*/
     }
     @Override
     public void onContentLoaded() {
@@ -242,6 +240,23 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
 
         if (queuedContent == 0)
         {
+
+            //linear layout wrapping scroll view so that footer can be at the bottom of screen all the time
+            LinearLayout wrapper = (LinearLayout) findViewById(R.id.stop_wrapper);
+
+            //add footer
+            //footer layout
+            LinearLayout footer = (LinearLayout)findViewById(R.id.footer);
+
+            //Next button
+            Button next = new Button(this);
+            next.setText("Next Stop");
+
+            //add buttons to footer and footer to screen
+            footer.addView(next);
+            footer.setBackgroundColor(Color.parseColor("#003f87"));
+
+
             //loadingPopup.dismiss();
             LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
             MainLayout.setVisibility(View.VISIBLE);
@@ -253,10 +268,71 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         return true;
     }
 
+    private FrameLayout GenerateMarkedMap(float markx, float marky, int MapId)
+    {
+        ArrayList<Float> marks = new ArrayList<Float>();
+
+        Stop[] stops = Globals.getStops();
+
+        for (Stop s : stops)
+        {
+            if (s.getStopMapID() == MapId)
+            {
+                marks.add(s.getStopPositionX());
+                marks.add(s.getStopPositionY());
+            }
+        }
+
+        FrameLayout mapLayout = new FrameLayout(this);
+        mapLayout.setLayoutParams(matchParentMatchParent);
+        //Put map in layout
+        MapImageView mapView = new MapImageView(this);
+        mapView.setMapMarks(marks);
+        mapView.setLayoutParams(matchParentWrapContent);
+        mapView.setId(R.id.titleId);
+        mapView.setImageResource(R.drawable.placeholder);
+        mapView.setVisibility(View.INVISIBLE);
+        mapView.setSelectedMark(markx, marky);
+        mapView.setOnClickListener(this);
+
+        Map map = null;
+
+        for (Map m : Globals.getMaps())
+        {
+            if (m.getMapId() == MapId)
+            {
+                map = m;
+                break;
+            }
+        }
+
+        final Map thisMap = map;
+        mapView.setContentDescription(thisMap.getMapUrl() + "," + thisMap.getMapId());
+
+        mapView.post(new Runnable(){
+
+            @Override
+            public void run() {
+                MapImageView map = (MapImageView) findViewById(R.id.titleId);
+                ImageRetrievalTask irt = new ImageRetrievalTask(map,StopActivity.this);
+                irt.execute(thisMap.getMapUrl());
+                queuedContent++;
+
+            }
+
+        });
+        mapView.setAdjustViewBounds(true);
+        mapLayout.addView(mapView);
+
+        return mapLayout;
+    }
+
+
     @Override
     public void onTaskCompleted(Stop[] s) {
         Stop thisStop = s[0];
         this.stop = thisStop;
+        this.MAP_ID = thisStop.getStopMapID();
         setTitle(this.stop.getStopName());
         JSONArray stopContent = null;
         try {
@@ -265,12 +341,21 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
             e.printStackTrace();
         }
 
+        LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
+        MainLayout.addView(GenerateMarkedMap(thisStop.getStopPositionX(),thisStop.getStopPositionY(),thisStop.getStopMapID()));
+
+
+
         boolean hasTextWidget = false;
+
         for(int i = 0; i < stopContent.length(); i++)
         {
             try {
                 JSONObject widget = stopContent.getJSONObject(i);
                 String widgetType = widget.getString("type");
+
+
+
 
                 if (widgetType.equals("text")) {
                     hasTextWidget = true;
@@ -287,6 +372,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
                     AddVideoWidget(widget);
                     this.queuedContent ++;
                 }
+
 
 
             } catch (JSONException e) {
@@ -311,7 +397,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     private TextView GenerateTitle(String titleText) {
 
         //Make the Title Text Underlined
-        SpannableString underlinedTitle = new SpannableString(titleText);
+        SpannableString underlinedTitle = new SpannableString("\n" + titleText);
         underlinedTitle.setSpan(new UnderlineSpan(), 0, titleText.length(), 0);
 
         //Title Text
@@ -321,6 +407,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         textTitle.setLayoutParams(titleparams);
         textTitle.setTextSize(20);
         textTitle.setText(underlinedTitle);
+        textTitle.setTypeface(Globals.getAvenir(this));
 
         return textTitle;
     }

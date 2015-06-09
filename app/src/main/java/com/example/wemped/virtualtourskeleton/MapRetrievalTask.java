@@ -82,10 +82,10 @@ public class MapRetrievalTask extends AsyncTask<Void,Void,Map[]> {
     protected void onPostExecute(Map[] Result){
         if (Result == null){
             Log.v("mapretrieval","result is null");
+        }else {
+            Globals.setMaps(Result);
+            listener.onTaskCompleted(Result);
         }
-        Globals.setMaps(Result);
-        listener.onTaskCompleted(Result);
-
     }
 
 }
