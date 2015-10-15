@@ -205,6 +205,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         /*Populate Views*/
         retrieveStops();
         retrieveMaps();
+        //note: app will simply crash if there's no maps or stops in the database.
     }
 
     private void retrieveStops(){
