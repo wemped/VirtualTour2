@@ -53,9 +53,33 @@
             android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_gravity="bottom">
+            android:layout_gravity="bottom"
+            android:background="#003f87">
+
+            <Button
+                android:id="@+id/PREV_BTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="#bad80a"
+                android:text="Previous Stop"
+                android:layout_marginRight="300px"
+                android:layout_weight="1">
+
+            </Button>
+
+            <Button
+                android:id="@+id/NEXT_BTN"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:background="#ffc61e"
+                android:text="Next Stop"
+                android:layout_weight="1">
+
+            </Button>
+
         </LinearLayout>
 
     </LinearLayout>

@@ -15,12 +15,18 @@ import java.util.List;
 public class Globals {
     /*Stops*/
     static private Stop[] Stops = null;
+    static private Stop[] AllStops = null;
 
     static public void setStops(Stop[] stops) {
         Arrays.sort(stops);
         Stops = stops;
     }
+    static public void setAllStops(Stop[] stops){
+        Arrays.sort(stops);
+        AllStops = stops;
+    }
     static public Stop[] getStops() {return Stops;}
+    static public Stop[] getAllStops() {return AllStops;}
     static public List<Stop> getStopsList(){return (Arrays.asList(Stops));}
     static public ArrayList<Stop> getStopsWithMapId(int mapId){
         int length = Stops.length;

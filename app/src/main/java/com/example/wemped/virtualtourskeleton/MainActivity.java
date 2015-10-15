@@ -170,9 +170,13 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         //create start tour button for footer
         Button guide = new Button(this);
         guide.setText("Start Guided Tour");
-        guide.setLayoutParams(new ViewGroup.LayoutParams(
+
+        LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp1.gravity = Gravity.CENTER;
+
+        guide.setLayoutParams(lp1);
 
         guide.setOnClickListener(new Button.OnClickListener()
         {
@@ -180,7 +184,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),StopActivity.class);
-                intent.putExtra("STOP_ID",Globals.getStops()[0].getStopID());
+                intent.putExtra("STOP_ID",Globals.getStops()[1].getStopID());
                 startActivity(intent);
             }
         });

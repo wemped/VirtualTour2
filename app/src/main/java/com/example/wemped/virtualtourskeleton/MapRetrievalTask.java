@@ -20,7 +20,8 @@ import java.util.Arrays;
 public class MapRetrievalTask extends AsyncTask<Void,Void,Map[]> {
 
     //private static final String MAP_URL = "http://sw.cs.wwu.edu/~vut3/virtualtour/maps/list.php";
-    private static final String MAP_URL = "http://sw.cs.wwu.edu/~ragsdan/csvirtualtour/maps/list.php";
+    //private static final String MAP_URL = "http://sw.cs.wwu.edu/~ragsdan/csvirtualtour/maps/list.php";
+    private static final String MAP_URL = "http://140.160.162.254/csvirtualtour/maps/list";
 
     private OnTaskCompleted listener;
     public MapRetrievalTask(MainActivity listener){
