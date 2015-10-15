@@ -85,13 +85,16 @@ class Androids extends CI_Controller {
         ];
 
         $clean_json_content = json_decode($stop['content'],true);
+        // var_dump($clean_json_content);
         foreach ($clean_json_content as $key => $val) {
             if ($clean_json_content[$key]['type'] == "img"){
                 $clean_json_content[$key]['type'] = "image";
+                $clean_json_content[$key]['title'] = $val['title'];
                 $clean_json_content[$key]['url'] =  "http://140.160.162.254/uploads/stops/images/" . $val['src'];
                 unset($clean_json_content[$key]['src']);
             }elseif ($clean_json_content[$key]['type'] == "vid") {
                 $clean_json_content[$key]['type'] = "video";
+                $clean_json_content[$key]['title'] = $val['title'];
                 $clean_json_content[$key]['url'] = "http://140.160.162.254/uploads/stops/videos/" . $val['src'];
                 unset($clean_json_content[$key]['src']);
             }
@@ -103,13 +106,21 @@ class Androids extends CI_Controller {
             $stop['active'] = "no";
         }
 
+        if ($stop['map_x'] == null){
+            $map_x = 0;
+            $map_y = 0;
+        }else{
+            $map_x = $stop['map_x'];
+            $map_y = $stop['map_y'];
+        }
+
         $stop_mask = [
             "StopID" => $stop['id'],
             "StopName" => $stop['title'],
             "RoomNumber" => $stop['room'],
             "StopContent" => $clean_json_content,
-            "StopX" => $stop['map_x'],
-            "StopY" => $stop['map_y'],
+            "StopX" => $map_x,
+            "StopY" => $map_y,
             "StopQRIdentifier" => $stop['qr_id'],
             "StopOrder" => $stop['position'],
             "MapID" => $stop['map_id'],

@@ -67,6 +67,7 @@
                            <div class='add_img component' id=<?= 'component' . strval($index) ?> data-index=<?= $index ?> data-src= <?= $img_filename?>>
                                <div class='panel panel-info'>
                                    <div class='panel-body'>
+                                        Title : <input type='text' class='add_img_title form-control'  />
                                         <img src=<?= $img_dir . $img_filename ?> >
                                    </div>
                                    <div class="panel-footer">
@@ -84,6 +85,7 @@
                            <div class='add_vid component' id=<?= 'component' . strval($index) ?> data-index=<?= $index ?> data-src= <?= $vid_filename?>>
                                <div class='panel panel-info'>
                                    <div class='panel-body'>
+                                        Title : <input type='text' class='add_img_title form-control'  />
                                         <video src=<?=$vid_dir . $vid_filename ?> controls>
                                    </div>
                                    <div class="panel-footer">
@@ -105,7 +107,7 @@
                                <div class='add_text component' id=<?= "component" . strval($index) ?> data-index=<?= $index ?> >
                                     <div class="panel panel-primary">
                                         <div class="panel-body">
-                                            Title : <input type='text' class='add_text_title form-control' value='<?= $component['title']?>' />
+                                            Title : <input type='text' class='add_vid_title form-control' value='<?= $component['title']?>' />
                                             Content : <textarea class='add_text_content form-control'><?= $component['content']?></textarea>
                                         </div>
                                         <div class="panel-footer">
@@ -122,6 +124,7 @@
                                 <div class='add_img component' id=<?= 'component' . strval($index) ?> data-index=<?= $index ?> data-src=<?= $component['src']?> >
                                     <div class='panel panel-info'>
                                         <div class='panel-body'>
+                                            <h4><?=$component['title']?></h4>
                                             <img src=<?=$img_dir .  $component['src'] ?> />
                                         </div>
                                         <div class="panel-footer">
@@ -138,6 +141,7 @@
                                 <div class='add_vid component' id=<?= 'component' . strval($index) ?> data-index=<?= $index ?> data-src= <?= $component['src'] ?>>
                                     <div class='panel panel-info'>
                                         <div class='panel-body'>
+                                             <h4><?=$component['title']?></h4>
                                              <video src=<?=$vid_dir . $component['src'] ?> controls>
                                         </div>
                                         <div class="panel-footer">
@@ -319,10 +323,12 @@
                     components.push(component);
                 }else if($( this ).hasClass("add_img")){
                     component.type = "img";
+                    component.title = $(div_id + " .add_img_title").val();
                     component.src = $(div_id).attr("data-src");
                     components.push(component);
                 }else if($( this ).hasClass("add_vid")){
                     component.type = "vid";
+                    component.title = $(div_id + " .add_vid_title").val();
                     component.src = $(div_id).attr("data-src");
                     components.push(component);
                 }

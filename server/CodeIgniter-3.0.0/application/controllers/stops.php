@@ -102,6 +102,7 @@ class Stops extends CI_Controller {
             }else{
                $viewdata['img_filename'] = false;
             }
+            $viewdata['vid_dir'] = "/uploads/stops/videos/";
             $viewdata['vid_filename'] = false;
             $viewdata['stop'] = $this->Stop->get_by_id($stop_id);
             $viewdata['maps'] = $this->Map->all();
@@ -122,6 +123,7 @@ class Stops extends CI_Controller {
             }else{
                $viewdata['vid_filename'] = false;
             }
+            $viewdata['img_dir'] = "/uploads/stops/images/";
             $viewdata['img_filename'] = false;
             $viewdata['stop'] = $this->Stop->get_by_id($stop_id);
             $viewdata['maps'] = $this->Map->all();
