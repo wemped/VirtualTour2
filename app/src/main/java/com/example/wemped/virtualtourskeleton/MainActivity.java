@@ -184,7 +184,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),StopActivity.class);
-                intent.putExtra("STOP_ID",Globals.getStops()[1].getStopID());
+                intent.putExtra("STOP_ID",Globals.getAllStops()[0].getStopID());
                 startActivity(intent);
             }
         });

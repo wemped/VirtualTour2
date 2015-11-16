@@ -239,18 +239,31 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
             if (next != -1)
             {
                 Intent intent = new Intent(this,StopActivity.class);
-                intent.putExtra("StopID", next);
+                intent.putExtra("STOP_ID", next);
                 intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
             else
             {
-                Toast t = Toast.makeText(this, "RIP stops", Toast.LENGTH_LONG);
+                Toast t = Toast.makeText(this, "Final stop in tour", Toast.LENGTH_LONG);
                 t.show();
             }
-        }
-        else if (v instanceof ImageView)
-        {
+        }if (v.getId() == R.id.PREV_BTN) {
+            int next = getPrevStop();
+
+            if (next != -1)
+            {
+                Intent intent = new Intent(this,StopActivity.class);
+                intent.putExtra("STOP_ID", next);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
+            else
+            {
+                Toast t = Toast.makeText(this, "First stop in tour", Toast.LENGTH_LONG);
+                t.show();
+            }
+        }else if (v instanceof ImageView){
             Intent intent = new Intent(getApplicationContext(), VideoPlayerActivity.class);
             intent.putExtra("url",v.getContentDescription());
             startActivity(intent);
@@ -276,10 +289,6 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
 
         if (queuedContent == 0)
         {
-
-
-
-
             //loadingPopup.dismiss();
             LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
             MainLayout.setVisibility(View.VISIBLE);
@@ -300,6 +309,21 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
             if (stops[i].getStopID() == STOP_ID)
             {
                 return stops[i+1].getStopID();
+            }
+        }
+        return -1;
+    }
+
+    private int getPrevStop() {
+
+        Stop[] stops = Globals.getAllStops();
+
+        for (int i = 0; i < stops.length - 1; i++)
+        {
+            if (stops[i].getStopID() == STOP_ID)
+            {
+                if(i == 0){return -1;}
+                return stops[i-1].getStopID();
             }
         }
         return -1;

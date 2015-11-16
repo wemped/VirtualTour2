@@ -26,6 +26,10 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name="com.example.wemped.virtualtourskeleton.VideoPlayerActivity"
+            android:label="Videos" >
+        </activity>
     </application>
 
 </manifest>
