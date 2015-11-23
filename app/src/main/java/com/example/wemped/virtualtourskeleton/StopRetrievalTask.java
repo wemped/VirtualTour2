@@ -20,9 +20,10 @@ import java.util.Arrays;
 public class StopRetrievalTask extends AsyncTask<Integer,Void,Stop[]>{
 
 
-    //private static final String STOP_URL = "http://sw.cs.wwu.edu/~vut3/virtualtour/jsonapi?stopid=";
+    private static final String STOP_URL = "http://sw.cs.wwu.edu/~vut3/virtualtour/jsonapi?stopid=";
 
-    private static final String STOP_URL = "http://sw.cs.wwu.edu/~ragsdan/csvirtualtour/jsonapi?stopid=";
+    //private static final String STOP_URL = "http://sw.cs.wwu.edu/~ragsdan/csvirtualtour/jsonapi?stopid=";
+    //private static final String STOP_URL = "http://140.160.162.254/csvirtualtour/jsonapi/";
 
     private OnTaskCompleted listener;
     public StopRetrievalTask(OnTaskCompleted listener){
@@ -41,7 +42,12 @@ public class StopRetrievalTask extends AsyncTask<Integer,Void,Stop[]>{
     }
 
     protected void onPostExecute(Stop[] Result){
-        if (Result != null) {
+        //potential source of button problem.
+        if (Result.length > 1) {
+            Globals.setAllStops(Result);
+            Globals.setStops(Result);
+            listener.onTaskCompleted(Result);
+        }else if ( (Result[0].getStopContent() ) != "null"){
             Globals.setStops(Result);
             listener.onTaskCompleted(Result);
         }
@@ -58,8 +64,10 @@ public class StopRetrievalTask extends AsyncTask<Integer,Void,Stop[]>{
             //Log.d("StopGenerator","Got herrre");
             InputStreamReader content = new InputStreamReader(in);
             BufferedReader reader = new BufferedReader(content);
+
             String line;
             while ((line = reader.readLine()) != null) {
+                Log.d("content",line);
                 builder.append(line);
             }
         } catch (Exception e) {

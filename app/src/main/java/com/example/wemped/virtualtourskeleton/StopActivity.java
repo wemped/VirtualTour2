@@ -5,9 +5,11 @@ import java.lang.*;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.Intent.*;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.view.GestureDetector.*;
 import android.widget.FrameLayout;
@@ -30,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +50,8 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     private static int MAP_ID = -1;
     private static int queuedContent=0;
     private static Stop stop = null;
+    private static int NEXT_BTN_ID = 3726;
+    private static int PREV_BTN_ID = 3762;
     private static final RelativeLayout.LayoutParams matchParentMatchParent = new RelativeLayout.LayoutParams(
             RelativeLayout.LayoutParams.MATCH_PARENT,
             RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -68,6 +74,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        STOP_ID = getIntent().getExtras().getInt("STOP_ID");
     }
 
     public void onResume() {
@@ -131,7 +138,7 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         //mainView.setOnTouchListener(this);
         StopRetrievalTask sr = new StopRetrievalTask(this);
         //Log.v("building stop with id", Integer.toString(STOP_ID));+
-
+        readyNavigationButtons();
         sr.execute(STOP_ID);
     }
 
@@ -226,14 +233,55 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     }
     @Override
     public void onClick(View v) {
-        /*if (v instanceof ImageView)
-        {
-            Intent intent = new Intent(this, VideoPlayerActivity.class);
+        if (v.getId() == R.id.NEXT_BTN) {
+            int next = getNextStop();
+
+            if (next != -1)
+            {
+                Intent intent = new Intent(this,StopActivity.class);
+                intent.putExtra("STOP_ID", next);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
+            else
+            {
+                Toast t = Toast.makeText(this, "Final stop in tour", Toast.LENGTH_LONG);
+                t.show();
+            }
+        }if (v.getId() == R.id.PREV_BTN) {
+            int next = getPrevStop();
+
+            if (next != -1)
+            {
+                Intent intent = new Intent(this,StopActivity.class);
+                intent.putExtra("STOP_ID", next);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
+            else
+            {
+                Toast t = Toast.makeText(this, "First stop in tour", Toast.LENGTH_LONG);
+                t.show();
+            }
+        }else if (v instanceof ImageView){
+            Intent intent = new Intent(getApplicationContext(), VideoPlayerActivity.class);
             intent.putExtra("url",v.getContentDescription());
             startActivity(intent);
 
-        }*/
+        }
     }
+
+    private void readyNavigationButtons()
+    {
+        Button next = (Button) findViewById(R.id.NEXT_BTN);
+        Button prev = (Button) findViewById(R.id.PREV_BTN);
+
+        next.setOnClickListener(this);
+        prev.setOnClickListener(this);
+    }
+
+
+
     @Override
     public void onContentLoaded() {
         this.queuedContent --;
@@ -241,23 +289,6 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
 
         if (queuedContent == 0)
         {
-
-            //linear layout wrapping scroll view so that footer can be at the bottom of screen all the time
-            LinearLayout wrapper = (LinearLayout) findViewById(R.id.stop_wrapper);
-
-            //add footer
-            //footer layout
-            LinearLayout footer = (LinearLayout)findViewById(R.id.footer);
-
-            //Next button
-            Button next = new Button(this);
-            next.setText("Next Stop");
-
-            //add buttons to footer and footer to screen
-            footer.addView(next);
-            footer.setBackgroundColor(Color.parseColor("#003f87"));
-
-
             //loadingPopup.dismiss();
             LinearLayout MainLayout = (LinearLayout)findViewById(R.id.layout_stop);
             MainLayout.setVisibility(View.VISIBLE);
@@ -267,6 +298,35 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
     /*Need to fill in, thinking this is the swipe handler stuff!*/
     public boolean onTouch(View v, MotionEvent event){
         return true;
+    }
+
+    private int getNextStop() {
+
+        Stop[] stops = Globals.getAllStops();
+
+        for (int i = 0; i < stops.length - 1; i++)
+        {
+            if (stops[i].getStopID() == STOP_ID)
+            {
+                return stops[i+1].getStopID();
+            }
+        }
+        return -1;
+    }
+
+    private int getPrevStop() {
+
+        Stop[] stops = Globals.getAllStops();
+
+        for (int i = 0; i < stops.length - 1; i++)
+        {
+            if (stops[i].getStopID() == STOP_ID)
+            {
+                if(i == 0){return -1;}
+                return stops[i-1].getStopID();
+            }
+        }
+        return -1;
     }
 
     private FrameLayout GenerateMarkedMap(float markx, float marky, int MapId)
@@ -411,5 +471,6 @@ public class StopActivity  extends FragmentActivity implements OnContentLoaded,V
         textTitle.setTypeface(Globals.getAvenir(this));
 
         return textTitle;
+
     }
 }
