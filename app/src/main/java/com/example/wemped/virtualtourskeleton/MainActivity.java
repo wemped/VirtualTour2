@@ -108,7 +108,11 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted, O
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
+            Intent showAbout = new Intent(this, AboutActivity.class);
+            startActivity(showAbout);
+
+
             return true;
         }
 
